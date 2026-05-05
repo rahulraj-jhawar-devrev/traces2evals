@@ -54,8 +54,11 @@ clustering:
 # === Eval generation ===
 eval_generation:
   max_evals_per_cluster: 3
+  max_evals_per_pattern: 3        # Cap per behavioral pattern (coverage gate)
   synthesis_preference: "auto"    # auto | always_synthesize | always_verbatim
   privatize: true                 # Remove PII from generated evals
+  coverage_gate: true             # Deduplicate evals via pattern tracking
+  pattern_index_path: "./pattern_index.json"  # Persists across runs
 
 # === Output ===
 output:
@@ -66,3 +69,8 @@ output:
 checkpoint:
   enabled: true
   directory: "./.traces2evals_cache"
+
+# === Enrichment definitions (optional) ===
+# Path to definitions.yaml — tells the pipeline how to interpret your metrics.
+# See definitions.yaml.example for format. If omitted, uses generic LLM assessment.
+# definitions_path: "./definitions.yaml"
