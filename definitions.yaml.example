@@ -1,0 +1,50 @@
+# Enrichment Definitions
+# Place this file as `definitions.yaml` next to your traces2evals.yaml.
+# It tells the pipeline how to interpret your platform's production metrics.
+#
+# If omitted, the pipeline falls back to generic LLM-based quality assessment.
+
+metrics:
+  - name: task_completion
+    scale: "0-1"
+    description: "Did the agent complete the user's requested task?"
+    interpretation:
+      "1.0": "Task completed successfully"
+      "0.0": "Task not completed (but ~43% of these are false negatives)"
+    reliability_notes: "tc=1 is ~100% reliable. tc=0 is only ~57% accurate."
+
+  - name: faithfulness
+    scale: "1-5"
+    description: "Are the agent's claims grounded in the knowledge sources it retrieved?"
+    interpretation:
+      "5": "Perfectly grounded in retrieved sources"
+      "4": "Minor omissions but no fabrication"
+      "3": "Some unsupported claims mixed with grounded ones"
+      "2": "Significant fabrication alongside some real information"
+      "1": "Largely or entirely fabricated"
+    reliability_notes: "tc=1 combined with faith<=3 means hallucination — confident answer with fabricated info."
+
+# Bucket assignment rules (used during quality gate enrichment).
+# Keys are bucket names, values describe the condition.
+bucket_rules:
+  success: "tc=1 AND faith>=4"
+  hallucination: "tc=1 AND faith<=3"
+  failure: "tc=0"
+  partial: "0 < tc < 1"
+  no_metrics: "No scores available"
+
+# Noise patterns — short messages to auto-skip during quality gate.
+# These are matched case-insensitively against user messages.
+noise_patterns:
+  - "hi"
+  - "hello"
+  - "hey"
+  - "test"
+  - "good morning"
+
+# Custom instructions appended to quality assessment and eval generation prompts.
+# Use this to provide domain-specific context about your agent.
+custom_instructions: |
+  This is a customer support agent that has access to CRM data, ticketing systems,
+  and knowledge bases. Sessions with skill executions (tool calls) are generally
+  more interesting for eval purposes than pure Q&A.

@@ -2,6 +2,7 @@ from traces2evals.models.session import Message, NormalizedSession, SessionScore
 from traces2evals.models.facet import Facet
 from traces2evals.models.cluster import ClusterInfo, ClusterHierarchy
 from traces2evals.models.eval_item import EvalItem
+from traces2evals.models.pattern import PatternEntry, PatternIndex
 
 __all__ = [
     "Message",
@@ -12,4 +13,6 @@ __all__ = [
     "ClusterInfo",
     "ClusterHierarchy",
     "EvalItem",
+    "PatternEntry",
+    "PatternIndex",
 ]

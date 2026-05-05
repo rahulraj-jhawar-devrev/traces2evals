@@ -61,8 +61,11 @@ class ClusteringConfig(BaseModel):
 
 class EvalGenerationConfig(BaseModel):
     max_evals_per_cluster: int = 3
+    max_evals_per_pattern: int = 3
     synthesis_preference: str = "auto"
     privatize: bool = True
+    coverage_gate: bool = True
+    pattern_index_path: str = "./pattern_index.json"
 
 
 class OutputConfig(BaseModel):
@@ -84,6 +87,7 @@ class TracesConfig(BaseModel):
     eval_generation: EvalGenerationConfig = EvalGenerationConfig()
     output: OutputConfig = OutputConfig()
     checkpoint: CheckpointConfig = CheckpointConfig()
+    definitions_path: Optional[str] = None
 
 
 def _interpolate_env_vars(value: str) -> str:
