@@ -1,0 +1,68 @@
+# traces2evals configuration
+# Copy this file to traces2evals.yaml and fill in your credentials.
+# Environment variables are supported via ${VAR_NAME} syntax.
+
+# === Source ===
+source:
+  adapter: langfuse
+  langfuse:
+    host: "https://cloud.langfuse.com"
+    public_key: "${LANGFUSE_PUBLIC_KEY}"
+    secret_key: "${LANGFUSE_SECRET_KEY}"
+    from_date: "30d"              # ISO date (2025-01-01) or relative (30d, 7d)
+    to_date: null                 # null = now
+    max_sessions: 5000
+    min_turns: 2
+
+# === LLM (all calls via litellm — any provider) ===
+llm:
+  model: "gpt-4o-mini"            # Any litellm model string
+  embedding_model: "text-embedding-3-large"
+  temperature: 0.0
+  max_parallel_calls: 5
+
+# === Quality gate ===
+quality:
+  use_platform_scores: true       # Use Langfuse scores/annotations if available
+  score_name: null                # Auto-detect score name, or specify explicitly
+  min_quality_threshold: 0.6
+  fallback_to_llm: true           # LLM-based quality assessment if no scores
+  exclude_failures: false         # Keep failed sessions (they inform diversity)
+
+# === Facet extraction ===
+facets:
+  max_input_tokens: 10000
+  batch_size: 20
+  parallel_batch_size: 5
+
+# === Clustering (COMPASS algorithm) ===
+clustering:
+  umap_n_components: 20
+  umap_n_neighbors: 15
+  umap_min_dist: 0.0
+  min_cluster_size: 5
+  min_samples: 1
+  cluster_selection_epsilon: 0.15
+  cluster_selection_method: "eom"
+  merge_similarity_threshold: 0.83
+  min_cluster_pct: 0.1
+  min_sessions_per_cluster: 2
+  max_group_size: 10
+  auto_tune: false                # Set true to use Optuna hyperparameter search
+  auto_tune_trials: 50
+
+# === Eval generation ===
+eval_generation:
+  max_evals_per_cluster: 3
+  synthesis_preference: "auto"    # auto | always_synthesize | always_verbatim
+  privatize: true                 # Remove PII from generated evals
+
+# === Output ===
+output:
+  format: "jsonl"                 # jsonl | braintrust | csv
+  directory: "./output"
+
+# === Checkpointing ===
+checkpoint:
+  enabled: true
+  directory: "./.traces2evals_cache"
