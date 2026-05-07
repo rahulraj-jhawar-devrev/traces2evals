@@ -18,8 +18,8 @@ env/
 *.swp
 *.swo
 
-# traces2evals cache
-.traces2evals_cache/
+# OSE cache
+.ose_cache/
 
 # Output
 output/

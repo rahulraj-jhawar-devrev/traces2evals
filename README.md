@@ -1,31 +1,33 @@
-# traces2evals
+# Open Standard Evaluation
 
 Generate diverse eval test suites from production agent traces.
 
-`traces2evals` ingests conversation sessions from observability platforms, clusters them for behavioral diversity using the COMPASS algorithm, and outputs structured eval datasets ready for your eval runner.
+**OSE** ingests conversation sessions from observability platforms, clusters them for behavioral diversity using the COMPASS algorithm, and outputs structured eval datasets ready for your eval runner.
 
 ## Why
 
 You're logging agent conversations in Langfuse (or similar). You want evals that reflect what your users actually ask — not synthetic questions from docs. This tool bridges that gap automatically:
 
 1. **Ingest** sessions from your observability platform
-2. **Quality-gate** to filter noise and failed interactions
+2. **Quality-gate** to filter noise and failed interactions (definitions-aware)
 3. **Extract facets** — privatized behavioral summaries of each conversation
 4. **Embed + Cluster** using COMPASS (UMAP → HDBSCAN → merge → prune → hierarchy)
 5. **Label** clusters with human-readable titles
 6. **Generate evals** — diverse test cases with judge remarks for automated scoring
+7. **Coverage gate** — deduplicate via pattern tracking across runs
+8. **Sanitize** — clean production artifacts from reference responses
 
 ## Install
 
 ```bash
-pip install traces2evals
+pip install open-standard-evaluation
 ```
 
 Or from source:
 
 ```bash
-git clone https://github.com/rahulraj-jhawar-devrev/traces2evals.git
-cd traces2evals
+git clone https://github.com/rahulraj-jhawar-devrev/open-standard-evaluation.git
+cd open-standard-evaluation
 pip install -e ".[dev]"
 ```
 
@@ -33,32 +35,32 @@ pip install -e ".[dev]"
 
 ```bash
 # 1. Copy and configure
-cp traces2evals.yaml.example traces2evals.yaml
-# Edit traces2evals.yaml with your Langfuse credentials and LLM API key
+cp open_standard_evaluation.yaml.example ose.yaml
+# Edit ose.yaml with your Langfuse credentials and LLM API key
 
 # 2. Run the pipeline
-traces2evals run --config traces2evals.yaml
+ose run --config ose.yaml
 
 # Or with inline credentials
 export LANGFUSE_PUBLIC_KEY="pk-..."
 export LANGFUSE_SECRET_KEY="sk-..."
-traces2evals run --config traces2evals.yaml --model gpt-4o-mini
+ose run --config ose.yaml --model gpt-4o-mini
 ```
 
 ## CLI
 
 ```bash
-traces2evals run       # Full pipeline end-to-end
-traces2evals status    # Show pipeline progress and cached state
-traces2evals clean     # Remove all cached state
+ose run       # Full pipeline end-to-end
+ose status    # Show pipeline progress and cached state
+ose clean     # Remove all cached state
 ```
 
-All commands accept `--config <path>` (defaults to `traces2evals.yaml` in working dir).
+All commands accept `--config <path>` (defaults to `open_standard_evaluation.yaml` in working dir).
 
 CLI flags override YAML config:
 
 ```bash
-traces2evals run \
+ose run \
   --langfuse-host "https://cloud.langfuse.com" \
   --langfuse-public-key "pk-..." \
   --langfuse-secret-key "sk-..." \
@@ -93,7 +95,7 @@ traces2evals run \
 
 ## Configuration
 
-See [`traces2evals.yaml.example`](traces2evals.yaml.example) for all options with comments.
+See [`open_standard_evaluation.yaml.example`](open_standard_evaluation.yaml.example) for all options with comments.
 
 Key sections:
 
@@ -101,9 +103,36 @@ Key sections:
 - **llm** — Model for all LLM calls (any [litellm](https://docs.litellm.ai/docs/providers) model string)
 - **quality** — Score thresholds and fallback behavior
 - **clustering** — COMPASS hyperparameters (defaults work well for 500-10k sessions)
-- **eval_generation** — How many evals per cluster, synthesis behavior
+- **eval_generation** — How many evals per cluster/pattern, coverage gate settings
 - **output** — Format and directory
 - **checkpoint** — Resume support (enabled by default)
+- **definitions_path** — Optional path to metric definitions for enrichment
+
+## Enrichment Definitions
+
+Provide a `definitions.yaml` to teach the pipeline how to interpret your platform's production metrics:
+
+```yaml
+metrics:
+  - name: task_completion
+    scale: "0-1"
+    description: "Did the agent complete the user's requested task?"
+    reliability_notes: "tc=1 is ~100% reliable. tc=0 is only ~57% accurate."
+
+  - name: faithfulness
+    scale: "1-5"
+    description: "Are the agent's claims grounded in retrieved sources?"
+
+noise_patterns:
+  - "hi"
+  - "hello"
+  - "test"
+
+custom_instructions: |
+  This agent has access to CRM data and ticketing systems.
+```
+
+See [`definitions.yaml.example`](definitions.yaml.example) for the full format.
 
 ## How It Works
 
@@ -118,12 +147,31 @@ The core algorithm that ensures behavioral diversity:
 5. **Reassign noise** points to nearest cluster centroid
 6. **Ward linkage hierarchy** groups clusters into navigable levels
 
+### Coverage Gate
+
+After eval generation, candidates pass through a dedup gate:
+
+- Tracks behavioral patterns across runs via `pattern_index.json`
+- Each pattern capped at 3 evals (configurable)
+- LLM reasoning: "does this test something mechanically different?"
+- Heuristic fallback (word overlap) when LLM unavailable
+- Prevents bloated, redundant eval suites
+
+### Response Sanitization
+
+Reference responses are cleaned before output:
+
+- **Signed URLs** (S3, GCS) → `[Generated document link]`
+- **Base64 data** → `[Embedded content]`
+- **Bearer tokens** → `[Redacted token]`
+- **Temporal drift note** appended to judge remarks when response contains dates/counts
+
 ### Checkpointing
 
 Every expensive step is cached. If the pipeline crashes or you add more sessions, it resumes from where it left off. Change your embedding model? Only downstream steps re-run.
 
 ```
-.traces2evals_cache/
+.ose_cache/
 ├── manifest.json       # Session progress tracking
 ├── raw_sessions.jsonl  # Fetched sessions
 ├── quality_scores.json # Quality gate results
@@ -135,11 +183,11 @@ Every expensive step is cached. If the pipeline crashes or you add more sessions
 
 ## Adding Adapters
 
-`traces2evals` is designed to support any observability platform. To add one:
+OSE is designed to support any observability platform. To add one:
 
 ```python
-from traces2evals.adapters.base import BaseAdapter
-from traces2evals.models.session import NormalizedSession, SessionScore
+from open_standard_evaluation.adapters.base import BaseAdapter
+from open_standard_evaluation.models.session import NormalizedSession, SessionScore
 
 class MyPlatformAdapter(BaseAdapter):
     def fetch_sessions(self, from_date, to_date, max_sessions):
@@ -159,7 +207,7 @@ Currently supported: **Langfuse**
 
 ## Claude Code Integration
 
-`traces2evals` works as a Claude Code skill. Add the skill file to your Claude Code skills directory and invoke it with `/traces2evals` to run the pipeline conversationally.
+OSE works as a Claude Code skill. Add the skill file to your Claude Code skills directory and invoke it with `/open-standard-evaluation` to run the pipeline conversationally.
 
 ## Requirements
 

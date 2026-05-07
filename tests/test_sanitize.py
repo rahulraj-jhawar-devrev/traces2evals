@@ -1,5 +1,5 @@
-from traces2evals.models.eval_item import EvalItem
-from traces2evals.steps.sanitize import (
+from open_standard_evaluation.models.eval_item import EvalItem
+from open_standard_evaluation.steps.sanitize import (
     TEMPORAL_DRIFT_NOTE,
     _contains_temporal_data,
     sanitize_eval_items,

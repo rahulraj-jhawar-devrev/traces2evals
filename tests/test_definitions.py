@@ -1,6 +1,6 @@
 import yaml
 
-from traces2evals.definitions import EnrichmentDefinitions, MetricDefinition, load_definitions
+from open_standard_evaluation.definitions import EnrichmentDefinitions, MetricDefinition, load_definitions
 
 
 class TestEnrichmentDefinitions:

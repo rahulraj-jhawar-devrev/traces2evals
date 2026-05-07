@@ -1,6 +1,6 @@
 from click.testing import CliRunner
 
-from traces2evals.cli import main
+from open_standard_evaluation.cli import main
 
 
 class TestCLI:
@@ -8,7 +8,7 @@ class TestCLI:
         runner = CliRunner()
         result = runner.invoke(main, ["--help"])
         assert result.exit_code == 0
-        assert "traces2evals" in result.output
+        assert "Open Standard Evaluation" in result.output
 
     def test_run_help(self):
         runner = CliRunner()

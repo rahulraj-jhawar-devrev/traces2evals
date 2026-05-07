@@ -6,7 +6,7 @@ import click
 
 @click.group()
 def main():
-    """traces2evals — Generate eval test suites from production agent traces."""
+    """ose — Open Standard Evaluation. Generate eval test suites from production agent traces."""
     pass
 
 
@@ -21,8 +21,8 @@ def main():
 @click.option("--output-dir", default=None)
 def run(config_path, langfuse_host, langfuse_public_key, langfuse_secret_key, model, embedding_model, output_format, output_dir):
     """Run the full pipeline end-to-end."""
-    from traces2evals.config import load_config
-    from traces2evals.pipeline import run_pipeline
+    from open_standard_evaluation.config import load_config
+    from open_standard_evaluation.pipeline import run_pipeline
 
     config = load_config(Path(config_path) if config_path else None)
 
@@ -49,8 +49,8 @@ def run(config_path, langfuse_host, langfuse_public_key, langfuse_secret_key, mo
 @click.option("--config", "config_path", type=click.Path(exists=True), default=None)
 def status(config_path):
     """Show pipeline status and cached state."""
-    from traces2evals.checkpoint import CheckpointManager
-    from traces2evals.config import load_config
+    from open_standard_evaluation.checkpoint import CheckpointManager
+    from open_standard_evaluation.config import load_config
 
     config = load_config(Path(config_path) if config_path else None)
     cp = CheckpointManager(config.checkpoint.directory)
@@ -69,8 +69,8 @@ def status(config_path):
 @click.option("--config", "config_path", type=click.Path(exists=True), default=None)
 def clean(config_path):
     """Remove all cached state and start fresh."""
-    from traces2evals.checkpoint import CheckpointManager
-    from traces2evals.config import load_config
+    from open_standard_evaluation.checkpoint import CheckpointManager
+    from open_standard_evaluation.config import load_config
 
     config = load_config(Path(config_path) if config_path else None)
     cp = CheckpointManager(config.checkpoint.directory)

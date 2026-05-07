@@ -1,9 +1,9 @@
 import csv
 import json
 
-from traces2evals.output.braintrust import write_braintrust
-from traces2evals.output.csv import write_csv
-from traces2evals.output.jsonl import write_jsonl
+from open_standard_evaluation.output.braintrust import write_braintrust
+from open_standard_evaluation.output.csv import write_csv
+from open_standard_evaluation.output.jsonl import write_jsonl
 
 
 class TestJsonlOutput:

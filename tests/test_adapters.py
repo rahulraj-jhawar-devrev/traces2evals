@@ -1,5 +1,5 @@
-from traces2evals.adapters.langfuse import LangfuseAdapter
-from traces2evals.models.session import Speaker
+from open_standard_evaluation.adapters.langfuse import LangfuseAdapter
+from open_standard_evaluation.models.session import Speaker
 
 
 class TestLangfuseAdapterContentExtraction:

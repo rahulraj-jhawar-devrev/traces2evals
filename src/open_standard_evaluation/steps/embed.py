@@ -2,9 +2,9 @@ from pathlib import Path
 
 import numpy as np
 
-from traces2evals.checkpoint import CheckpointManager
-from traces2evals.llm.client import LLMClient
-from traces2evals.models.facet import Facet
+from open_standard_evaluation.checkpoint import CheckpointManager
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.models.facet import Facet
 
 
 def run_embedding(

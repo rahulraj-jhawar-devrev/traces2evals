@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from traces2evals.checkpoint import CheckpointManager
+from open_standard_evaluation.checkpoint import CheckpointManager
 
 
 class TestCheckpointManager:

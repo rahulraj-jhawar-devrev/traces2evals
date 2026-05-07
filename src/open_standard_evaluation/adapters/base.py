@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Iterator, Optional
 
-from traces2evals.models.session import NormalizedSession, SessionScore
+from open_standard_evaluation.models.session import NormalizedSession, SessionScore
 
 
 class BaseAdapter(ABC):

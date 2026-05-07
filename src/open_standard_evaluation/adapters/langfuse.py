@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Iterator, Optional
 
-from traces2evals.adapters.base import BaseAdapter
-from traces2evals.config import LangfuseSourceConfig
-from traces2evals.models.session import Message, NormalizedSession, SessionScore, Speaker
+from open_standard_evaluation.adapters.base import BaseAdapter
+from open_standard_evaluation.config import LangfuseSourceConfig
+from open_standard_evaluation.models.session import Message, NormalizedSession, SessionScore, Speaker
 
 
 class LangfuseAdapter(BaseAdapter):

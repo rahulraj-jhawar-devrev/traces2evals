@@ -75,7 +75,7 @@ class OutputConfig(BaseModel):
 
 class CheckpointConfig(BaseModel):
     enabled: bool = True
-    directory: str = "./.traces2evals_cache"
+    directory: str = "./.ose_cache"
 
 
 class TracesConfig(BaseModel):
@@ -113,7 +113,7 @@ def _walk_and_interpolate(obj):
 def load_config(path: Optional[Path] = None) -> TracesConfig:
     """Load config from YAML file with env var interpolation."""
     if path is None:
-        path = Path("traces2evals.yaml")
+        path = Path("open_standard_evaluation.yaml")
 
     if not path.exists():
         return TracesConfig()

@@ -14,7 +14,7 @@ data that may change over time.
 import re
 from typing import Optional
 
-from traces2evals.models.eval_item import EvalItem
+from open_standard_evaluation.models.eval_item import EvalItem
 
 # Patterns to sanitize
 _SIGNED_URL_PATTERN = re.compile(

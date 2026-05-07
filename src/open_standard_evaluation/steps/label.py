@@ -1,11 +1,11 @@
 import numpy as np
 from tqdm import tqdm
 
-from traces2evals.config import ClusteringConfig
-from traces2evals.llm.client import LLMClient
-from traces2evals.models.cluster import ClusterHierarchy, ClusterInfo
-from traces2evals.models.facet import Facet
-from traces2evals.prompts import CLUSTER_LABELING_PROMPT, PARENT_LABELING_PROMPT
+from open_standard_evaluation.config import ClusteringConfig
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.models.cluster import ClusterHierarchy, ClusterInfo
+from open_standard_evaluation.models.facet import Facet
+from open_standard_evaluation.prompts import CLUSTER_LABELING_PROMPT, PARENT_LABELING_PROMPT
 
 
 def run_labeling(

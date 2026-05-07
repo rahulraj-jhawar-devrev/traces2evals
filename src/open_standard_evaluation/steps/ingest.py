@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from traces2evals.adapters.base import BaseAdapter
-from traces2evals.checkpoint import CheckpointManager
-from traces2evals.config import SourceConfig
-from traces2evals.models.session import NormalizedSession
+from open_standard_evaluation.adapters.base import BaseAdapter
+from open_standard_evaluation.checkpoint import CheckpointManager
+from open_standard_evaluation.config import SourceConfig
+from open_standard_evaluation.models.session import NormalizedSession
 
 
 def run_ingest(

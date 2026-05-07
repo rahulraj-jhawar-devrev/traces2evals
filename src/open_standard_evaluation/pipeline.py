@@ -1,24 +1,24 @@
 from pathlib import Path
 
-from traces2evals.adapters.langfuse import LangfuseAdapter
-from traces2evals.checkpoint import CheckpointManager
-from traces2evals.config import TracesConfig
-from traces2evals.definitions import load_definitions
-from traces2evals.llm.client import LLMClient
-from traces2evals.output.jsonl import write_jsonl
-from traces2evals.steps.cluster import run_clustering
-from traces2evals.steps.coverage_gate import load_pattern_index, run_coverage_gate, save_pattern_index
-from traces2evals.steps.embed import run_embedding
-from traces2evals.steps.facets import run_facet_extraction
-from traces2evals.steps.generate import run_eval_generation
-from traces2evals.steps.ingest import run_ingest
-from traces2evals.steps.label import run_labeling
-from traces2evals.steps.quality_gate import run_quality_gate
-from traces2evals.steps.sanitize import sanitize_eval_items
+from open_standard_evaluation.adapters.langfuse import LangfuseAdapter
+from open_standard_evaluation.checkpoint import CheckpointManager
+from open_standard_evaluation.config import TracesConfig
+from open_standard_evaluation.definitions import load_definitions
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.output.jsonl import write_jsonl
+from open_standard_evaluation.steps.cluster import run_clustering
+from open_standard_evaluation.steps.coverage_gate import load_pattern_index, run_coverage_gate, save_pattern_index
+from open_standard_evaluation.steps.embed import run_embedding
+from open_standard_evaluation.steps.facets import run_facet_extraction
+from open_standard_evaluation.steps.generate import run_eval_generation
+from open_standard_evaluation.steps.ingest import run_ingest
+from open_standard_evaluation.steps.label import run_labeling
+from open_standard_evaluation.steps.quality_gate import run_quality_gate
+from open_standard_evaluation.steps.sanitize import sanitize_eval_items
 
 
 def run_pipeline(config: TracesConfig) -> None:
-    """Execute the full traces2evals pipeline end-to-end."""
+    """Execute the full open_standard_evaluation pipeline end-to-end."""
     checkpoint = CheckpointManager(config.checkpoint.directory)
     llm = LLMClient(
         model=config.llm.model,
@@ -110,10 +110,10 @@ def run_pipeline(config: TracesConfig) -> None:
     if config.output.format == "jsonl":
         write_jsonl(evals, output_dir / "evals.jsonl")
     elif config.output.format == "csv":
-        from traces2evals.output.csv import write_csv
+        from open_standard_evaluation.output.csv import write_csv
         write_csv(evals, output_dir / "evals.csv")
     elif config.output.format == "braintrust":
-        from traces2evals.output.braintrust import write_braintrust
+        from open_standard_evaluation.output.braintrust import write_braintrust
         write_braintrust(evals, output_dir / "evals.jsonl")
 
     print(f"\n{'=' * 60}")

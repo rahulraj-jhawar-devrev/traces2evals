@@ -1,5 +1,5 @@
 [project]
-name = "traces2evals"
+name = "open-standard-evaluation"
 version = "0.1.0"
 description = "Generate diverse eval test suites from production agent traces. Ingests sessions from observability platforms, clusters for behavioral diversity, outputs structured evals."
 readme = "README.md"
@@ -39,7 +39,7 @@ viz = ["matplotlib>=3.7", "seaborn>=0.12"]
 dev = ["pytest>=7.0", "pytest-asyncio>=0.21", "ruff>=0.4"]
 
 [project.scripts]
-traces2evals = "traces2evals.cli:main"
+ose = "open_standard_evaluation.cli:main"
 
 [build-system]
 requires = ["setuptools>=68.0"]

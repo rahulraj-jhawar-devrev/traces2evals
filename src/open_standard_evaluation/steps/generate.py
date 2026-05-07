@@ -1,13 +1,13 @@
 import numpy as np
 from tqdm import tqdm
 
-from traces2evals.config import EvalGenerationConfig
-from traces2evals.llm.client import LLMClient
-from traces2evals.models.cluster import ClusterHierarchy
-from traces2evals.models.eval_item import EvalItem
-from traces2evals.models.facet import Facet
-from traces2evals.models.session import NormalizedSession
-from traces2evals.prompts import EVAL_CRAFTING_PROMPT
+from open_standard_evaluation.config import EvalGenerationConfig
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.models.cluster import ClusterHierarchy
+from open_standard_evaluation.models.eval_item import EvalItem
+from open_standard_evaluation.models.facet import Facet
+from open_standard_evaluation.models.session import NormalizedSession
+from open_standard_evaluation.prompts import EVAL_CRAFTING_PROMPT
 
 
 def run_eval_generation(

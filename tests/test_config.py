@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from traces2evals.config import (
+from open_standard_evaluation.config import (
     TracesConfig,
     _interpolate_env_vars,
     _walk_and_interpolate,

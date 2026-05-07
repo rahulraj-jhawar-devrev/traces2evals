@@ -1,5 +1,5 @@
-# traces2evals configuration
-# Copy this file to traces2evals.yaml and fill in your credentials.
+# open_standard_evaluation configuration
+# Copy this file to open_standard_evaluation.yaml and fill in your credentials.
 # Environment variables are supported via ${VAR_NAME} syntax.
 
 # === Source ===
@@ -68,7 +68,7 @@ output:
 # === Checkpointing ===
 checkpoint:
   enabled: true
-  directory: "./.traces2evals_cache"
+  directory: "./.ose_cache"
 
 # === Enrichment definitions (optional) ===
 # Path to definitions.yaml — tells the pipeline how to interpret your metrics.

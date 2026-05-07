@@ -1,4 +1,4 @@
-from traces2evals.models.session import Message, NormalizedSession, Speaker
+from open_standard_evaluation.models.session import Message, NormalizedSession, Speaker
 
 
 class TestNormalizedSession:

@@ -2,10 +2,10 @@ from datetime import datetime
 
 import pytest
 
-from traces2evals.config import TracesConfig
-from traces2evals.models.eval_item import EvalItem
-from traces2evals.models.facet import Facet
-from traces2evals.models.session import Message, NormalizedSession, SessionScore, Speaker
+from open_standard_evaluation.config import TracesConfig
+from open_standard_evaluation.models.eval_item import EvalItem
+from open_standard_evaluation.models.facet import Facet
+from open_standard_evaluation.models.session import Message, NormalizedSession, SessionScore, Speaker
 
 
 @pytest.fixture

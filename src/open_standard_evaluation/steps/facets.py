@@ -1,12 +1,12 @@
 import tiktoken
 from tqdm import tqdm
 
-from traces2evals.checkpoint import CheckpointManager
-from traces2evals.config import FacetsConfig
-from traces2evals.llm.client import LLMClient
-from traces2evals.models.facet import Facet
-from traces2evals.models.session import NormalizedSession
-from traces2evals.prompts import FACET_EXTRACTION_PROMPT
+from open_standard_evaluation.checkpoint import CheckpointManager
+from open_standard_evaluation.config import FacetsConfig
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.models.facet import Facet
+from open_standard_evaluation.models.session import NormalizedSession
+from open_standard_evaluation.prompts import FACET_EXTRACTION_PROMPT
 
 
 def run_facet_extraction(

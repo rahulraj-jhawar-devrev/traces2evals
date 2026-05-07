@@ -14,9 +14,9 @@ import json
 from pathlib import Path
 from typing import Optional
 
-from traces2evals.llm.client import LLMClient
-from traces2evals.models.eval_item import EvalItem
-from traces2evals.models.pattern import PatternEntry, PatternIndex
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.models.eval_item import EvalItem
+from open_standard_evaluation.models.pattern import PatternEntry, PatternIndex
 
 COVERAGE_GATE_PROMPT = """You are evaluating whether a candidate eval should be added to a test suite.
 

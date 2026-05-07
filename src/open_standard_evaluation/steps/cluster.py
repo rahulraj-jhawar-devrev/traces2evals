@@ -4,8 +4,8 @@ from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silho
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.cluster.hierarchy import fcluster, linkage
 
-from traces2evals.config import ClusteringConfig
-from traces2evals.models.facet import Facet
+from open_standard_evaluation.config import ClusteringConfig
+from open_standard_evaluation.models.facet import Facet
 
 
 def run_clustering(

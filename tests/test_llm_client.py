@@ -1,4 +1,4 @@
-from traces2evals.llm.client import LLMClient
+from open_standard_evaluation.llm.client import LLMClient
 
 
 class TestJsonParsing:

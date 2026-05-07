@@ -1,11 +1,11 @@
 from typing import Optional
 
-from traces2evals.checkpoint import CheckpointManager
-from traces2evals.config import QualityConfig
-from traces2evals.definitions import EnrichmentDefinitions
-from traces2evals.llm.client import LLMClient
-from traces2evals.models.session import NormalizedSession
-from traces2evals.prompts import QUALITY_ASSESSMENT_PROMPT
+from open_standard_evaluation.checkpoint import CheckpointManager
+from open_standard_evaluation.config import QualityConfig
+from open_standard_evaluation.definitions import EnrichmentDefinitions
+from open_standard_evaluation.llm.client import LLMClient
+from open_standard_evaluation.models.session import NormalizedSession
+from open_standard_evaluation.prompts import QUALITY_ASSESSMENT_PROMPT
 
 
 def run_quality_gate(

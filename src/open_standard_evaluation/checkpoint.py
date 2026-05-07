@@ -6,7 +6,7 @@ from typing import Any, Optional
 class CheckpointManager:
     """Manages per-step checkpoints for resumable pipeline runs."""
 
-    def __init__(self, cache_dir: str = "./.traces2evals_cache"):
+    def __init__(self, cache_dir: str = "./.open_standard_evaluation_cache"):
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.manifest_path = self.cache_dir / "manifest.json"

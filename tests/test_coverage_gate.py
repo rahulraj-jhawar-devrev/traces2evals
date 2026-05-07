@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from traces2evals.models.eval_item import EvalItem
-from traces2evals.models.pattern import PatternEntry, PatternIndex
-from traces2evals.steps.coverage_gate import (
+from open_standard_evaluation.models.eval_item import EvalItem
+from open_standard_evaluation.models.pattern import PatternEntry, PatternIndex
+from open_standard_evaluation.steps.coverage_gate import (
     _is_duplicate_query,
     _format_patterns_for_prompt,
     _heuristic_gate,
