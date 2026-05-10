@@ -1,0 +1,11 @@
+{
+  "sess_01": {
+    "ingested": true
+  },
+  "sess_02": {
+    "ingested": true
+  },
+  "bad_session": {
+    "ingested": true
+  }
+}

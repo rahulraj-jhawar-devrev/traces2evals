@@ -49,13 +49,29 @@ class LLMClient:
     def chat_json_batch(
         self, prompts: list[str], desc: str = "LLM calls"
     ) -> list[dict]:
-        """Process multiple prompts in parallel batches."""
-        results = []
+        """Process multiple prompts in parallel batches.
+
+        Returns a dict for each successful prompt. On per-item failure,
+        inserts None at that index so positions stay aligned.
+        """
+        results = [None] * len(prompts)
         for i in tqdm(range(0, len(prompts), self.max_parallel_calls), desc=desc):
             batch = prompts[i : i + self.max_parallel_calls]
+
+            def _call_one(prompt: str) -> dict | None:
+                try:
+                    return self.chat_json(prompt)
+                except Exception as exc:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "chat_json_batch item failed: %s", exc
+                    )
+                    return None
+
             with ThreadPoolExecutor(max_workers=self.max_parallel_calls) as executor:
-                batch_results = list(executor.map(self.chat_json, batch))
-            results.extend(batch_results)
+                batch_results = list(executor.map(_call_one, batch))
+            for j, result in enumerate(batch_results):
+                results[i + j] = result
         return results
 
     def embed(self, texts: list[str], batch_size: int = 100) -> np.ndarray:

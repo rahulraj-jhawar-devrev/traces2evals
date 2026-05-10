@@ -1,6 +1,9 @@
 import json
+import logging
 from pathlib import Path
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 
 class CheckpointManager:
@@ -16,7 +19,11 @@ class CheckpointManager:
     def manifest(self) -> dict:
         if self._manifest is None:
             if self.manifest_path.exists():
-                self._manifest = json.loads(self.manifest_path.read_text())
+                try:
+                    self._manifest = json.loads(self.manifest_path.read_text())
+                except (json.JSONDecodeError, ValueError) as exc:
+                    logger.warning("Corrupted manifest, starting fresh: %s", exc)
+                    self._manifest = {}
             else:
                 self._manifest = {}
         return self._manifest
@@ -65,6 +72,34 @@ class CheckpointManager:
 
     def save_meta(self, meta: dict) -> None:
         self.save_artifact("meta.json", meta)
+
+    def load_embeddings(self, expected_rows: int, expected_model: str) -> Optional[Any]:
+        """Load cached embeddings with corruption handling.
+
+        Returns the numpy array if cache is valid, None otherwise.
+        """
+        import numpy as np
+
+        embeddings_path = self.cache_dir / "embeddings.npy"
+        if not embeddings_path.exists():
+            return None
+
+        meta = self.get_meta()
+        cached_model = meta.get("embedding_model")
+        if cached_model != expected_model:
+            return None
+
+        try:
+            existing = np.load(embeddings_path)
+        except (ValueError, OSError) as exc:
+            logger.warning("Corrupted embeddings cache, will re-embed: %s", exc)
+            return None
+
+        if existing.ndim != 2:
+            logger.warning("Embeddings cache has wrong dimensions (ndim=%d), will re-embed", existing.ndim)
+            return None
+
+        return existing
 
     def clean(self) -> None:
         """Remove all cached state."""

@@ -15,12 +15,9 @@ def run_embedding(
     """Generate embeddings for facets. Loads from cache if available."""
     embeddings_path = Path(checkpoint.cache_dir) / "embeddings.npy"
 
-    meta = checkpoint.get_meta()
-    cached_model = meta.get("embedding_model")
+    existing = checkpoint.load_embeddings(len(facets), llm.embedding_model)
 
-    # If cached embeddings exist and model hasn't changed, load them
-    if embeddings_path.exists() and cached_model == llm.embedding_model:
-        existing = np.load(embeddings_path)
+    if existing is not None:
         if existing.shape[0] == len(facets):
             print(f"  Loaded cached embeddings: {existing.shape}")
             return existing
@@ -39,6 +36,7 @@ def run_embedding(
     embeddings = llm.embed(texts)
     np.save(embeddings_path, embeddings)
 
+    meta = checkpoint.get_meta()
     meta["embedding_model"] = llm.embedding_model
     checkpoint.save_meta(meta)
 

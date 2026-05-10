@@ -1,8 +1,22 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Iterator, Optional
 
 from open_standard_evaluation.models.session import NormalizedSession, SessionScore
+
+
+def parse_relative_date(value: Optional[str]) -> Optional[datetime]:
+    """Parse a date string or relative offset (e.g. '30d') into a datetime.
+
+    Supports ISO-8601 strings and relative day offsets like '7d', '30d'.
+    Returns None if value is None.
+    """
+    if value is None:
+        return None
+    if value.endswith("d"):
+        days = int(value[:-1])
+        return datetime.now(timezone.utc) - timedelta(days=days)
+    return datetime.fromisoformat(value)
 
 
 class BaseAdapter(ABC):
