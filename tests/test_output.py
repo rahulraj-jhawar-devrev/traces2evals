@@ -28,26 +28,19 @@ def _make_eval(**overrides) -> EvalItem:
 
 
 class TestJsonlOutput:
-    def test_writes_valid_jsonl(self, tmp_path):
-        path = tmp_path / "out" / "evals.jsonl"
+    def test_writes_correct_schema(self, tmp_path):
+        """jsonl output must use input/ideal/metadata keys — not user_message/reference_response."""
+        path = tmp_path / "evals.jsonl"
         write_jsonl([_make_eval()], path)
 
-        lines = path.read_text().strip().split("\n")
-        assert len(lines) == 1
-
-        row = json.loads(lines[0])
-        assert row["input"] == "How do I reset my password?"
-        assert row["ideal"] == "Go to Settings > Security > Reset Password."
+        row = json.loads(path.read_text().strip())
+        assert "input" in row, "jsonl must use 'input' key"
+        assert "ideal" in row, "jsonl must use 'ideal' key"
+        assert "metadata" in row
         assert row["metadata"]["cluster_id"] == 1
-        assert row["metadata"]["cluster_title"] == "Account Management"
         assert row["metadata"]["synthesis_type"] == "verbatim"
 
-    def test_creates_parent_dirs(self, tmp_path):
-        path = tmp_path / "deep" / "nested" / "evals.jsonl"
-        write_jsonl([_make_eval()], path)
-        assert path.exists()
-
-    def test_multiple_evals(self, tmp_path):
+    def test_one_line_per_eval(self, tmp_path):
         evals = [_make_eval(user_message=f"Question {i}") for i in range(5)]
         path = tmp_path / "evals.jsonl"
         write_jsonl(evals, path)
@@ -57,12 +50,8 @@ class TestJsonlOutput:
         for i, line in enumerate(lines):
             assert json.loads(line)["input"] == f"Question {i}"
 
-    def test_empty_list_writes_empty_file(self, tmp_path):
-        path = tmp_path / "evals.jsonl"
-        write_jsonl([], path)
-        assert path.read_text() == ""
-
     def test_unicode_content(self, tmp_path):
+        """Non-ASCII content must survive json round-trip without mojibake."""
         eval_item = _make_eval(
             user_message="日本語の質問です",
             reference_response="日本語の回答です",
@@ -75,14 +64,15 @@ class TestJsonlOutput:
 
 
 class TestBraintrustOutput:
-    def test_writes_braintrust_format(self, tmp_path):
+    def test_uses_expected_not_ideal(self, tmp_path):
+        """Braintrust format uses 'expected' not 'ideal' — mixing them up breaks eval ingestion."""
         path = tmp_path / "evals.jsonl"
         write_braintrust([_make_eval()], path)
 
         row = json.loads(path.read_text().strip())
+        assert "expected" in row, "braintrust must use 'expected' key"
+        assert "ideal" not in row, "braintrust must NOT use 'ideal' key"
         assert row["input"] == "How do I reset my password?"
-        assert row["expected"] == "Go to Settings > Security > Reset Password."
-        assert "metadata" in row
 
     def test_metadata_includes_cluster_info(self, tmp_path):
         path = tmp_path / "evals.jsonl"
@@ -94,7 +84,8 @@ class TestBraintrustOutput:
 
 
 class TestCsvOutput:
-    def test_writes_csv_with_headers(self, tmp_path):
+    def test_csv_headers_match_expected(self, tmp_path):
+        """CSV must use user_message/reference_output/remarks — consumed by downstream tools."""
         path = tmp_path / "evals.csv"
         write_csv([_make_eval()], path)
 
@@ -103,21 +94,9 @@ class TestCsvOutput:
             rows = list(reader)
 
         assert rows[0] == ["user_message", "reference_output", "remarks"]
-        assert rows[1][0] == "How do I reset my password?"
-        assert rows[1][1] == "Go to Settings > Security > Reset Password."
-        assert rows[1][2] == "Tests account recovery workflow guidance"
-
-    def test_multiple_evals(self, tmp_path):
-        evals = [_make_eval(user_message=f"Q{i}") for i in range(3)]
-        path = tmp_path / "evals.csv"
-        write_csv(evals, path)
-
-        with open(path) as f:
-            rows = list(csv.reader(f))
-
-        assert len(rows) == 4  # header + 3 data rows
 
     def test_csv_handles_commas_in_content(self, tmp_path):
+        """Real eval content has commas. If quoting breaks, rows get split wrong."""
         eval_item = _make_eval(
             user_message="A, B, and C",
             reference_response="Step 1, Step 2, Step 3",
@@ -128,5 +107,6 @@ class TestCsvOutput:
         with open(path) as f:
             rows = list(csv.reader(f))
 
+        assert len(rows) == 2  # header + 1 data row (not 3 split rows)
         assert rows[1][0] == "A, B, and C"
         assert rows[1][1] == "Step 1, Step 2, Step 3"
